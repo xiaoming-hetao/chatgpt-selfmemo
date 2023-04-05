@@ -44,7 +44,7 @@ const handleSubmit = async () => {
   }
 
   await request('post', '/user/login', postData, (res: any) => {
-    const token = res.data?.token
+    const token = res?.token
     hollowStore.setUserToken(token)
     localStorage.setItem('token', token)
     router.push('/hollow')

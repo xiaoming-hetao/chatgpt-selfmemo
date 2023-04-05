@@ -1,7 +1,11 @@
 <template>
   <TopMenu :isShowCenter="false">
     <template #navbar-left>
-      <span class="iconfont icon-fanhui" style="font-size: 20px"></span>
+      <span
+        class="iconfont icon-fanhui"
+        style="font-size: 20px"
+        @click="() => router.push('/hollow')"
+      ></span>
     </template>
     <template #navbar-right>
       <span
@@ -11,7 +15,11 @@
       ></span>
     </template>
   </TopMenu>
-  <div class="page-container">
+  <div
+    class="page-container"
+    v-loading="state.isLoading"
+    element-loading-text="发布中..."
+  >
     <div class="mood-record-container">
       <el-input
         ref="textareaRef"
@@ -42,9 +50,13 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { request } from '~/config/http.config'
+import { request, state } from '~/config/http.config'
 
 import TopMenu from '~/components/common/TopMenu'
+
+definePageMeta({
+  middleware: 'auth',
+})
 
 const router = useRouter()
 const moodText = ref<string>('')
@@ -81,7 +93,7 @@ const handleMoodPublish = async () => {
 <style lang="less" scoped>
 .page-container {
   padding: var(--page-container-padding);
-
+  margin-top: 50px;
   .mood-record-container {
     position: relative;
 

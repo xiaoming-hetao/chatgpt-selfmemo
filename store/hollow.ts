@@ -11,9 +11,7 @@ export const useHollowStore = defineStore('hollow-store', {
   }),
   getters: {
     userToken(): string {
-      console.log(this.userInfo.token, 'this.userInfo.token')
       if (typeof window !== 'undefined' && !this.userInfo.token) {
-        console.log('1')
         this.userInfo.token = localStorage.getItem('token') as string
       }
       return this.userInfo.token

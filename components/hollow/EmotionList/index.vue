@@ -31,9 +31,8 @@ defineProps<{
   display: flex;
   margin-bottom: 24px;
   .time {
-    margin-right: 10px;
     margin-top: 20px;
-    width: 120px;
+    width: 100px;
     p {
       font-size: 16px;
       font-weight: bold;
@@ -45,7 +44,8 @@ defineProps<{
     }
   }
   .content {
-    font-size: 14px;
+    font-size: 12px;
+    white-space: pre-wrap;
   }
   .tag {
     color: var(--primary-color-blue);

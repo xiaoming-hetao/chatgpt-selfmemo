@@ -16,7 +16,7 @@
       :loading="state.isLoading"
       animated
       :count="3"
-      :throttle="500"
+      :throttle="200"
     >
       <template #template>
         <div class="skeleton-container">
@@ -40,6 +40,10 @@ import { Emotions } from '~/types/hollow'
 import BottomMenu from '~/components/common/BottomMenu'
 import TopMenu from '~/components/common/TopMenu'
 import EmotionList from '~/components/hollow/EmotionList'
+
+definePageMeta({
+  middleware: 'auth',
+})
 
 const emotionList = ref<Emotions[]>([])
 
@@ -66,7 +70,10 @@ onMounted(() => {
 
 <style lang="less" scoped>
 .page-container {
+  margin-top: 100px;
+  overflow-y: scroll;
   padding: var(--page-container-padding);
+  margin-bottom: 30px;
   .skeleton-container {
     display: flex;
     margin-bottom: 24px;
