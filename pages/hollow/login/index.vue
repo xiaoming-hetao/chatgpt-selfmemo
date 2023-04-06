@@ -1,62 +1,116 @@
 <template>
   <div class="login-wrapper">
-    <el-form :model="loginForm" label-width="80px">
-      <el-form-item label="用户名">
-        <el-input v-model="loginForm.username" style="width: 200px"></el-input>
-      </el-form-item>
-      <el-form-item label="密码">
-        <el-input
-          type="password"
-          v-model="loginForm.password"
-          show-password
-          style="width: 200px"
-        ></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button
-          type="primary"
-          @click="handleSubmit"
-          :loading="state.isLoading"
-          >登录</el-button
+    <LogoConatiner />
+    <div class="form-container">
+      <el-card class="form-card">
+        <el-form
+          :model="loginForm"
+          ref="loginFormRef"
+          :rules="rules"
+          style="margin-top: 40px"
         >
-      </el-form-item>
-    </el-form>
+          <el-form-item prop="username">
+            <el-input
+              :prefix-icon="UserFilled"
+              v-model="loginForm.username"
+              placeholder="请输入用户名"
+            ></el-input>
+          </el-form-item>
+          <el-form-item prop="password">
+            <el-input
+              :prefix-icon="Lock"
+              type="password"
+              v-model="loginForm.password"
+              show-password
+              placeholder="请输入密码"
+            ></el-input>
+          </el-form-item>
+          <div class="action">
+            <p @click="() => router.push('/hollow/register')">注册</p>
+            <p>忘记密码</p>
+          </div>
+          <el-form-item>
+            <el-button
+              @click="handleSubmit(loginFormRef)"
+              color="#8093f2"
+              style="color: #fff; width: 100%; height: 40px"
+              round
+              :loading="state.isLoading"
+              >登录</el-button
+            >
+          </el-form-item>
+        </el-form>
+      </el-card>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { reactive } from 'vue'
+import { UserFilled, Lock } from '@element-plus/icons-vue'
 import { request, state } from '~/config/http.config'
 import { useHollowStore } from '~/store/hollow'
+import type { FormInstance } from 'element-plus'
+
+import LogoConatiner from '~/components/hollow/LogoContainer'
 
 const hollowStore = useHollowStore()
 const router = useRouter()
 
+const loginFormRef = ref<FormInstance>()
 const loginForm = reactive({
   username: '',
   password: '',
 })
+const rules = ref({
+  username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+  password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+})
 
-const handleSubmit = async () => {
-  const postData = {
-    username: loginForm.username,
-    password: loginForm.password,
-  }
+const handleSubmit = async (formEl: FormInstance | undefined) => {
+  await formEl?.validate(async (valid) => {
+    if (valid) {
+      const postData = {
+        username: loginForm.username,
+        password: loginForm.password,
+      }
 
-  await request('post', '/user/login', postData, (res: any) => {
-    const token = res?.token
-    hollowStore.setUserToken(token)
-    localStorage.setItem('token', token)
-    router.push('/hollow')
+      await request('post', '/user/login', postData, (res: any) => {
+        const token = res?.token
+        hollowStore.setUserToken(token)
+        localStorage.setItem('token', token)
+        router.push('/hollow')
+      })
+    }
   })
 }
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .login-wrapper {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
   height: 100vh;
+  .form-container {
+    padding: 0 var(--page-container-padding);
+    --el-color-primary: #8093f2;
+    --el-font-size-base: 13px;
+    .form-card {
+      height: 300px;
+      padding: 0 20px;
+      margin-top: -30px;
+    }
+    .action {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
+      margin-top: -6px;
+      p {
+        font-size: 12px;
+        color: var(--primary-color-grey);
+        cursor: pointer;
+      }
+    }
+  }
 }
 </style>

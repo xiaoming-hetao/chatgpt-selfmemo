@@ -1,52 +1,67 @@
 <template>
   <div class="register-page">
+    <LogoConatiner />
     <div class="register-form">
-      <h2 class="register-title">注册</h2>
-      <el-form
-        :model="form"
-        :rules="rules"
-        ref="registerForm"
-        label-width="80px"
-      >
-        <el-form-item label="用户名" prop="username">
-          <el-input
-            v-model="form.username"
-            placeholder="请输入用户名"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input
-            type="password"
-            v-model="form.password"
-            placeholder="请输入密码"
-            show-password
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="form.email" placeholder="请输入邮箱"></el-input>
-        </el-form-item>
-        <el-form-item label="性别" prop="gender">
-          <el-radio-group v-model="form.gender">
-            <el-radio label="male">男</el-radio>
-            <el-radio label="female">女</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="年龄" prop="age">
-          <el-input
-            v-model.number="form.age"
-            placeholder="请输入年龄"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="邀请码" prop="inviteCode">
-          <el-input
-            v-model="form.inviteCode"
-            placeholder="请输入邀请码"
-          ></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleRegister">注册</el-button>
-        </el-form-item>
-      </el-form>
+      <el-card class="form-card">
+        <el-form :model="form" :rules="rules" ref="registerFormRef">
+          <el-form-item prop="username">
+            <el-input
+              :prefix-icon="UserFilled"
+              v-model="form.username"
+              placeholder="请输入用户名"
+            ></el-input>
+          </el-form-item>
+          <el-form-item prop="password">
+            <el-input
+              type="password"
+              :prefix-icon="Lock"
+              v-model="form.password"
+              placeholder="请输入密码"
+              show-password
+            ></el-input>
+          </el-form-item>
+          <el-form-item prop="email">
+            <el-input
+              :prefix-icon="Message"
+              v-model="form.email"
+              placeholder="请输入邮箱"
+            ></el-input>
+          </el-form-item>
+          <el-form-item prop="gender">
+            <el-radio-group v-model="form.gender">
+              <el-radio label="male">男</el-radio>
+              <el-radio label="female">女</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item prop="age">
+            <el-input
+              :prefix-icon="Histogram"
+              v-model.number="form.age"
+              placeholder="请输入年龄"
+            ></el-input>
+          </el-form-item>
+          <el-form-item prop="inviteCode">
+            <el-input
+              :prefix-icon="Promotion"
+              v-model="form.inviteCode"
+              placeholder="请输入邀请码"
+            ></el-input>
+          </el-form-item>
+          <div class="action">
+            <p @click="() => router.push('/hollow/login')">登录</p>
+          </div>
+          <el-form-item>
+            <el-button
+              @click="handleRegister(registerFormRef)"
+              color="#8093f2"
+              style="color: #fff; width: 100%; height: 40px"
+              round
+              :loading="state.isLoading"
+              >注册
+            </el-button>
+          </el-form-item>
+        </el-form>
+      </el-card>
     </div>
   </div>
 </template>
@@ -54,11 +69,20 @@
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
 import { request, state } from '~/config/http.config'
-import { useHollowStore } from '~/store/hollow'
+import {
+  UserFilled,
+  Lock,
+  Message,
+  Histogram,
+  Promotion,
+} from '@element-plus/icons-vue'
+import type { FormInstance } from 'element-plus'
 
-const hollowStore = useHollowStore()
+import LogoConatiner from '~/components/hollow/LogoContainer'
+
 const router = useRouter()
 
+const registerFormRef = ref<FormInstance>()
 const form = reactive({
   username: '',
   password: '',
@@ -67,7 +91,6 @@ const form = reactive({
   age: '',
   inviteCode: '',
 })
-
 const rules = ref({
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
@@ -83,36 +106,53 @@ const rules = ref({
   inviteCode: [{ required: true, message: '请输入邀请码', trigger: 'blur' }],
 })
 
-const handleRegister = async () => {
-  const postData = {
-    username: form.username,
-    password: form.password,
-    email: form.email,
-    gender: form.gender,
-    age: form.age,
-    inviteCode: form.inviteCode,
-  }
+const handleRegister = async (formEl: FormInstance | undefined) => {
+  await formEl?.validate(async (valid) => {
+    if (valid) {
+      const postData = {
+        username: form.username,
+        password: form.password,
+        email: form.email,
+        gender: form.gender,
+        age: form.age,
+        inviteCode: form.inviteCode,
+      }
 
-  await request('post', '/user/register', postData, (res: any) => {
-    router.push('/hollow/login')
+      await request('post', '/user/register', postData, () => {
+        router.push('/hollow/login')
+      })
+    }
   })
 }
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .register-page {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
   height: 100vh;
-}
 
-.register-form {
-  padding: 20px;
-}
+  .register-form {
+    padding: 0 var(--page-container-padding);
+    --el-color-primary: #8093f2;
+    --el-font-size-base: 13px;
+    .form-card {
+      height: 420px;
+      padding: 0 20px;
+      margin-top: -30px;
 
-.register-title {
-  text-align: center;
-  margin-bottom: 20px;
+      .action {
+        display: flex;
+        flex-direction: row-reverse;
+        margin-bottom: 20px;
+        margin-top: -6px;
+        p {
+          font-size: 12px;
+          color: var(--primary-color-grey);
+          cursor: pointer;
+        }
+      }
+    }
+  }
 }
 </style>

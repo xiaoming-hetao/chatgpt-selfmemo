@@ -2,12 +2,16 @@
   <div class="continer">
     <!-- <div class="feature-entry">备忘录</div> -->
     <div class="feature-wrap">
-      <div class="feature-entry">树洞</div>
+      <div class="feature-entry" @click="() => router.push('/hollow')">
+        树洞
+      </div>
     </div>
   </div>
 </template>
 
-<script lang="ts"></script>
+<script lang="ts" setup>
+const router = useRouter()
+</script>
 
 <style lang="less" scoped>
 // 公转动画
