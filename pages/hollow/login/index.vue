@@ -35,7 +35,7 @@
               color="#8093f2"
               style="color: #fff; width: 100%; height: 40px"
               round
-              :loading="state.isLoading"
+              :loading="isLoading"
               >登录</el-button
             >
           </el-form-item>
@@ -53,6 +53,7 @@ import { useHollowStore } from '~/store/hollow'
 import type { FormInstance } from 'element-plus'
 
 import LogoConatiner from '~/components/hollow/LogoContainer'
+import { fa } from 'element-plus/es/locale'
 
 const hollowStore = useHollowStore()
 const router = useRouter()
@@ -66,21 +67,33 @@ const rules = ref({
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
 })
+const isLoading = ref<boolean>(false)
 
 const handleSubmit = async (formEl: FormInstance | undefined) => {
   await formEl?.validate(async (valid) => {
     if (valid) {
+      isLoading.value = true
       const postData = {
         username: loginForm.username,
         password: loginForm.password,
       }
 
-      await request('post', '/user/login', postData, (res: any) => {
-        const token = res?.token
-        hollowStore.setUserToken(token)
-        localStorage.setItem('token', token)
-        router.push('/hollow')
-      })
+      request(
+        'post',
+        '/user/login',
+        postData,
+        (res: any) => {
+          isLoading.value = false
+          const token = res?.token
+          hollowStore.setUserToken(token)
+          localStorage.setItem('token', token)
+          router.push('/hollow')
+        },
+        (err) => {
+          console.log(err)
+          isLoading.value = false
+        }
+      )
     }
   })
 }

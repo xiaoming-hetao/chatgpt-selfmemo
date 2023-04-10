@@ -7,3 +7,14 @@ export interface Emotions {
   createTime: string
   updateTime: string
 }
+
+// 格式化时间
+export enum Week {
+  Sunday,
+  Monday,
+  Tuesday,
+  Wednesday,
+  Thursday,
+  Friday,
+  Saturday,
+}

@@ -47,7 +47,7 @@ definePageMeta({
 
 const emotionList = ref<Emotions[]>([])
 
-const fetchNoteList = async () => {
+const fetchMoodList = async () => {
   const postData = {
     userId: 1,
     startTime: '2023-03-05',
@@ -64,7 +64,7 @@ const fetchNoteList = async () => {
 }
 
 onMounted(() => {
-  fetchNoteList()
+  fetchMoodList()
 })
 </script>
 

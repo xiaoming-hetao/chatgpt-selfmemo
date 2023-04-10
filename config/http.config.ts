@@ -61,15 +61,23 @@ http.interceptors.response.use(
   }
 )
 
+type MessageType = 'success' | 'error' | 'warning'
+export interface ToastMessage {
+  type: MessageType
+  message: string
+}
+
 type SuccessHandler<T> = (data: T) => void
 type ErrorHandler = (error: any) => void
+type ToastHandler = () => ToastMessage
 
 export async function request<T>(
   method: 'get' | 'post' | 'put' | 'delete',
   url: string,
   data?: any,
   onSuccess?: SuccessHandler<T>,
-  onError?: ErrorHandler
+  onError?: ErrorHandler,
+  toastHandler?: ToastHandler
 ): Promise<T | any> {
   try {
     const payload = method === 'get' ? { params: data } : { data }
@@ -82,13 +90,21 @@ export async function request<T>(
     if (onSuccess) {
       onSuccess(response?.data?.data)
     }
-
-    return response?.data?.data
   } catch (error: any) {
     if (onError) {
       onError(error)
     }
 
     state.error = error
+  }
+
+  if (toastHandler) {
+    const toastConfig = toastHandler()
+    ElMessage({
+      message: `${toastConfig.message}`,
+      type: `${toastConfig.type}`,
+      center: true,
+      offset: 60,
+    })
   }
 }

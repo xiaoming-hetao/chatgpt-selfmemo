@@ -5,7 +5,7 @@
         <p>{{ dayjs(`${item.createTime}`).format('DD') }}日</p>
         <span>{{ dayjs(`${item.createTime}`).format('HH:mm') }}</span>
       </div>
-      <Card>
+      <Card @click="() => router.push(`/hollow/mood/${item.id}`)">
         <p class="content">
           {{ item.content }}
         </p>
@@ -24,6 +24,8 @@ import Card from '~/components/common/Card'
 defineProps<{
   list: Emotions[]
 }>()
+
+const router = useRouter()
 </script>
 
 <style lang="less" scoped>

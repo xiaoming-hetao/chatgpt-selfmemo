@@ -1,5 +1,10 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  app: {
+    head: {
+      title: '情绪窝',
+    },
+  },
   css: [
     'element-plus/dist/index.css',
     '~/assets/style/global.less',
