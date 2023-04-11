@@ -5,17 +5,28 @@
         class="iconfont icon-fanhui"
         style="font-size: 20px"
         @click="() => router.push('/hollow')"
-      ></span>
+      />
     </template>
     <template #navbar-right>
       <span
+        v-show="!isEditStatus"
         class="iconfont icon-shanchu"
         style="font-size: 20px"
         @click="dialogVisible = true"
+      />
+      <span
+        v-show="isEditStatus"
+        class="iconfont icon-fabu"
+        style="font-size: 20px"
+        @click="handleMoodUpdate"
       ></span>
     </template>
   </TopMenu>
-  <div class="page-container">
+  <div
+    class="page-container"
+    v-loading="updateLoading"
+    element-loading-text="发布中..."
+  >
     <el-skeleton
       style="width: 100%"
       :loading="skeletonLoading"
@@ -30,30 +41,63 @@
       </template>
       <template #default>
         <div class="top-title" v-show="moodDetail.createTime">
-          <div class="date">
-            {{ dayjs(`${moodDetail.createTime}`).format('DD') }}
+          <div class="date-time">
+            <div class="date">
+              {{ dayjs(`${moodDetail.createTime}`).format('DD') }}
+            </div>
+            <div class="time">
+              <p>
+                {{ dayjs(`${moodDetail.createTime}`).format('M') }}月/{{
+                  weekDay[dayjs(`${moodDetail.createTime}`).format('d')]
+                }}
+              </p>
+              <span>{{
+                dayjs(`${moodDetail.createTime}`).format('HH:mm')
+              }}</span>
+            </div>
           </div>
-          <div class="time">
-            <p>
-              {{ dayjs(`${moodDetail.createTime}`).format('M') }}月/{{
-                weekDay[dayjs(`${moodDetail.createTime}`).format('d')]
-              }}
-            </p>
-            <span>{{ dayjs(`${moodDetail.createTime}`).format('HH:mm') }}</span>
-          </div>
+          <span
+            v-show="!isEditStatus"
+            class="iconfont icon-bianji1"
+            style="font-size: 18px; cursor: pointer"
+            @click="isEditStatus = true"
+          />
+          <el-icon
+            :size="20"
+            v-show="isEditStatus"
+            @click="isEditStatus = false"
+          >
+            <CircleClose />
+          </el-icon>
         </div>
         <el-divider />
-        <p class="content">
-          {{ moodDetail.content }}
-        </p>
-        <div class="content-extra-info">
-          <div class="text-count">
-            <span class="iconfont icon-M_wenzi" style="font-size: 20px"></span>
-            <p>{{ moodDetail.content?.replace(/\s/g, '')?.length }} 字</p>
-          </div>
-          <div class="tag">
-            <span class="iconfont icon-biaoqian" style="font-size: 20px"></span>
-            <p>{{ moodDetail.tag }}</p>
+        <el-input
+          ref="textareaRef"
+          v-model="moodText"
+          v-if="isEditStatus"
+          :autosize="{ minRows: 7, maxRows: 10 }"
+          type="textarea"
+          placeholder="记录此刻的心情……"
+        />
+        <div v-else>
+          <p class="content">
+            {{ moodDetail.content }}
+          </p>
+          <div class="content-extra-info">
+            <div class="text-count">
+              <span
+                class="iconfont icon-M_wenzi"
+                style="font-size: 20px"
+              ></span>
+              <p>{{ moodDetail.content?.replace(/\s/g, '')?.length }} 字</p>
+            </div>
+            <div class="tag">
+              <span
+                class="iconfont icon-biaoqian"
+                style="font-size: 20px"
+              ></span>
+              <p>{{ moodDetail.tag }}</p>
+            </div>
           </div>
         </div>
       </template>
@@ -84,13 +128,17 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { request, state, ToastMessage } from '~/config/http.config'
 import dayjs from 'dayjs'
+import { CircleClose } from '@element-plus/icons-vue'
+import { request, state, ToastMessage } from '~/config/http.config'
 import { Emotions, Week } from '~/types/hollow'
+
 import TopMenu from '~/components/common/TopMenu'
 
 const router = useRouter()
 const route = useRoute()
+
+const moodId = Number(route?.params?.id)
 
 const weekDay: Record<any, string> = {
   [Week.Sunday]: '周日',
@@ -105,12 +153,15 @@ const weekDay: Record<any, string> = {
 const moodDetail = ref<Emotions>({} as Emotions)
 const dialogVisible = ref<boolean>(false)
 const skeletonLoading = ref<boolean>(false)
+const updateLoading = ref<boolean>(false)
+const isEditStatus = ref<boolean>(false)
 const toastMessage = ref<ToastMessage>({} as ToastMessage)
+const moodText = ref<string>('')
 
 const fetchMoodDetail = async () => {
   skeletonLoading.value = true
   const params = {
-    recordId: Number(route?.params?.id),
+    recordId: moodId,
   }
   await request<{ emotionRecord: Emotions }>(
     'get',
@@ -118,6 +169,7 @@ const fetchMoodDetail = async () => {
     params,
     (res) => {
       moodDetail.value = res.emotionRecord
+      moodText.value = res.emotionRecord?.content
       skeletonLoading.value = false
     }
   )
@@ -125,7 +177,7 @@ const fetchMoodDetail = async () => {
 
 const handleMoodDelete = async () => {
   const postData = {
-    id: Number(route?.params?.id),
+    id: moodId,
   }
   await request(
     'post',
@@ -141,6 +193,21 @@ const handleMoodDelete = async () => {
       return toastMessage.value
     }
   )
+}
+
+const handleMoodUpdate = async () => {
+  updateLoading.value = true
+  const postData = {
+    id: moodId,
+    userId: 1,
+    score: 5,
+    tag: 'emo',
+    content: moodText.value,
+  }
+  await request('post', '/emotion_record/update', postData, () => {
+    updateLoading.value = false
+    router.push('/hollow')
+  })
 }
 
 onMounted(() => {
@@ -167,13 +234,19 @@ onMounted(() => {
   .top-title {
     display: flex;
     align-items: center;
-    .date {
-      font-size: 24px;
-      margin-right: 20px;
-    }
-    .time {
-      color: var(--primary-color-grey);
-      font-size: 12px;
+    justify-content: space-between;
+
+    .date-time {
+      display: flex;
+      align-items: center;
+      .date {
+        font-size: 24px;
+        margin-right: 20px;
+      }
+      .time {
+        color: var(--primary-color-grey);
+        font-size: 12px;
+      }
     }
   }
   .content {
