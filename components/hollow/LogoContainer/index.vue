@@ -1,8 +1,14 @@
 <template>
   <div class="logo-container">
-    <div class="logo">LOGO</div>
+    <Circle size="60px" background="#fff">
+      <div class="logo">LOGO</div>
+    </Circle>
   </div>
 </template>
+
+<script lang="ts" setup>
+import Circle from '~/components/common/Circle'
+</script>
 
 <style lang="less" scoped>
 .logo-container {
@@ -13,13 +19,6 @@
   justify-content: center;
   align-items: center;
   .logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: #fff;
     color: var(--primary-color-grey);
   }
 }

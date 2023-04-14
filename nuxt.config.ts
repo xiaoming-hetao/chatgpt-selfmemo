@@ -3,6 +3,9 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: '情绪窝',
+      link: [
+        { rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css' }
+      ]
     },
   },
   css: [

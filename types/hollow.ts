@@ -3,6 +3,7 @@ export interface Emotions {
   content: string
   score: number
   tag: string
+  tags: string[]
   reply: string
   createTime: string
   updateTime: string

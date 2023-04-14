@@ -37,6 +37,7 @@
         <div class="skeleton-container">
           <el-skeleton-item variant="text" class="time" />
           <el-skeleton-item variant="text" class="content" />
+          <el-skeleton-item variant="text" class="reply" />
         </div>
       </template>
       <template #default>
@@ -70,15 +71,16 @@
             <CircleClose />
           </el-icon>
         </div>
+
         <el-divider />
-        <el-input
-          ref="textareaRef"
-          v-model="moodText"
+
+        <MoodInput
+          ref="moodInput"
           v-if="isEditStatus"
-          :autosize="{ minRows: 7, maxRows: 10 }"
-          type="textarea"
-          placeholder="记录此刻的心情……"
+          :initTags="moodDetail.tags"
+          :initText="moodDetail.content"
         />
+
         <div v-else>
           <p class="content">
             {{ moodDetail.content }}
@@ -99,6 +101,11 @@
               <p>{{ moodDetail.tag }}</p>
             </div>
           </div>
+        </div>
+
+        <div v-if="moodDetail.reply?.length">
+          <el-divider />
+          <Reply :GPTRole="'朋友'" :reply="moodDetail.reply" />
         </div>
       </template>
     </el-skeleton>
@@ -134,6 +141,8 @@ import { request, state, ToastMessage } from '~/config/http.config'
 import { Emotions, Week } from '~/types/hollow'
 
 import TopMenu from '~/components/common/TopMenu'
+import Reply from '~/components/hollow/Reply'
+import MoodInput from '~/components/hollow/MoodInput'
 
 const router = useRouter()
 const route = useRoute()
@@ -157,6 +166,7 @@ const updateLoading = ref<boolean>(false)
 const isEditStatus = ref<boolean>(false)
 const toastMessage = ref<ToastMessage>({} as ToastMessage)
 const moodText = ref<string>('')
+const moodInput = ref<any>(null)
 
 const fetchMoodDetail = async () => {
   skeletonLoading.value = true
@@ -199,9 +209,9 @@ const handleMoodUpdate = async () => {
   updateLoading.value = true
   const postData = {
     id: moodId,
-    userId: 1,
     score: 5,
-    tag: 'emo',
+    tag: 'gpt',
+    tags: moodInput.value?.tags,
     content: moodText.value,
   }
   await request('post', '/emotion_record/update', postData, () => {
@@ -220,6 +230,7 @@ onMounted(() => {
   padding: var(--page-container-padding);
   margin-top: 50px;
 
+  --el-color-primary: var(--primary-color-orange);
   .skeleton-container {
     .time {
       width: 100%;
@@ -229,6 +240,11 @@ onMounted(() => {
     .content {
       width: 100%;
       height: 200px;
+      margin-bottom: 20px;
+    }
+    .reply {
+      width: 100%;
+      height: 100px;
     }
   }
   .top-title {
@@ -245,7 +261,7 @@ onMounted(() => {
       }
       .time {
         color: var(--primary-color-grey);
-        font-size: 12px;
+        font-size: var(--normal-font-size);
       }
     }
   }
@@ -263,7 +279,7 @@ onMounted(() => {
       color: var(--primary-color-grey);
       p {
         margin-left: 10px;
-        font-size: 12px;
+        font-size: var(--normal-font-size);
       }
     }
   }

@@ -10,7 +10,11 @@
           {{ item.content }}
         </p>
         <!-- <div class="image">12</div> -->
-        <div class="tag">#{{ item.tag }}</div>
+        <div class="tag-conatiner">
+          <template v-for="tagItem of item.tags">
+            <div class="tag">#{{ tagItem }}</div>
+          </template>
+        </div>
       </Card>
     </div>
   </div>
@@ -42,17 +46,21 @@ const router = useRouter()
     }
     span {
       color: var(--primary-color-grey);
-      font-size: 12px;
+      font-size: var(--normal-font-size);
     }
   }
   .content {
-    font-size: 12px;
+    font-size: var(--normal-font-size);
     white-space: pre-wrap;
   }
-  .tag {
-    color: var(--primary-color-blue);
-    margin-top: 10px;
-    font-size: 12px;
+  .tag-conatiner {
+    display: flex;
+    .tag {
+      color: var(--primary-color-blue);
+      margin-top: 10px;
+      font-size: var(--normal-font-size);
+      margin-right: 5px;
+    }
   }
 }
 </style>

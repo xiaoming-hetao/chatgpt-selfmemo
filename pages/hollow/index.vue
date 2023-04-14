@@ -48,15 +48,10 @@ definePageMeta({
 const emotionList = ref<Emotions[]>([])
 
 const fetchMoodList = async () => {
-  const postData = {
-    userId: 1,
-    startTime: '2023-03-05',
-    endTime: '2023-04-01',
-  }
   await request<{ emotionRecords: Emotions[] }>(
     'get',
     '/emotion_record/query',
-    postData,
+    null,
     (res) => {
       emotionList.value = res.emotionRecords
     }

@@ -20,20 +20,7 @@
     v-loading="state.isLoading"
     element-loading-text="发布中..."
   >
-    <div class="mood-record-container">
-      <el-input
-        ref="textareaRef"
-        v-model="moodText"
-        :autosize="{ minRows: 7, maxRows: 10 }"
-        type="textarea"
-        placeholder="记录此刻的心情……"
-      />
-      <div class="mood-action">
-        <div @click="handleAddTag">#</div>
-        <div class="iconfont icon-xingxing" />
-        <div class="iconfont icon-tupian" />
-      </div>
-    </div>
+    <MoodInput ref="moodInput" />
     <div class="role-container">
       <div class="center"></div>
       <div
@@ -53,22 +40,17 @@ import { ref } from 'vue'
 import { request, state } from '~/config/http.config'
 
 import TopMenu from '~/components/common/TopMenu'
+import MoodInput from '~/components/hollow/MoodInput'
 
 definePageMeta({
   middleware: 'auth',
 })
 
 const router = useRouter()
-const moodText = ref<string>('')
-const textareaRef = ref<any>(null)
-
-const handleAddTag = () => {
-  moodText.value = `${moodText.value} #`
-  textareaRef.value.focus()
-}
+const moodInput = ref<any>(null)
 
 const handleMoodPublish = async () => {
-  if (!moodText.value?.length) {
+  if (!moodInput.value?.moodText?.length) {
     ElMessage({
       message: '还没记录你的心情',
       center: true,
@@ -79,10 +61,10 @@ const handleMoodPublish = async () => {
     return
   }
   const postData = {
-    userId: 1,
     score: 5,
-    tag: 'emo',
-    content: moodText.value,
+    tag: 'gpt',
+    tags: moodInput.value?.tags,
+    content: moodInput.value?.moodText,
   }
   await request('post', '/emotion_record/add', postData, (res: any) => {
     router.push('/hollow')
@@ -94,21 +76,7 @@ const handleMoodPublish = async () => {
 .page-container {
   padding: var(--page-container-padding);
   margin-top: 50px;
-  .mood-record-container {
-    position: relative;
 
-    .mood-action {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: absolute;
-      bottom: 10px;
-    }
-    .mood-action div {
-      cursor: pointer;
-      margin: 0 10px;
-    }
-  }
   .role-container {
     width: 300px;
     height: 300px;
