@@ -140,16 +140,16 @@ const featureList = [
 const handleItemClick = (title: string) => {
   switch (title) {
     case '心情':
-      router.push('profile/all-mood')
+      router.push('/hollow/profile/all-mood')
       break
     case '标签':
-      router.push('profile/all-tags')
+      router.push('/hollow/profile/all-tags')
       break
     case '情绪评分':
-      router.push('profile/mood-rate')
+      router.push('/hollow/profile/mood-rate')
       break
     case '修改信息':
-      router.push('profile/update')
+      router.push('/hollow/profile/update')
       break
     default:
       break

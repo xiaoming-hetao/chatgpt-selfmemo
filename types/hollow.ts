@@ -19,3 +19,8 @@ export enum Week {
   Friday,
   Saturday,
 }
+
+export interface MoodRate {
+  date: string
+  score: number
+}
