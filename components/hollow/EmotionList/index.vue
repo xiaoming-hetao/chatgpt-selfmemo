@@ -55,6 +55,7 @@ const router = useRouter()
   }
   .tag-conatiner {
     display: flex;
+    flex-wrap: wrap;
     .tag {
       color: var(--primary-color-blue);
       margin-top: 10px;

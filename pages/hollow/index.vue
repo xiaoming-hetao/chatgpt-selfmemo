@@ -3,6 +3,9 @@
     <template #navbar-left>
       <span style="font-size: 20px">logo</span>
     </template>
+    <template #navbar-center>
+      <input type="text" placeholder="搜索" class="input" />
+    </template>
     <template #navbar-right>
       <span
         class="iconfont icon-xinxiang-xiankuang"
@@ -64,6 +67,13 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
+.input {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: 20px;
+  background-color: #f2f2f2;
+}
 .page-container {
   margin-top: 100px;
   overflow-y: scroll;

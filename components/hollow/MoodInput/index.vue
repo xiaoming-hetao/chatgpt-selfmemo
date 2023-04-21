@@ -166,6 +166,7 @@ defineExpose({
   .tag-container {
     padding: var(--page-container-padding);
     display: flex;
+    flex-wrap: wrap;
     .tag {
       display: flex;
       align-items: center;
@@ -177,6 +178,7 @@ defineExpose({
       width: fit-content;
       font-size: var(--normal-font-size);
       margin-right: 10px;
+      margin-bottom: 10px;
       span {
         margin-right: 5px;
       }

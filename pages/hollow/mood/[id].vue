@@ -93,12 +93,14 @@
               ></span>
               <p>{{ moodDetail.content?.replace(/\s/g, '')?.length }} 字</p>
             </div>
-            <div class="tag">
+            <div class="tag" v-show="moodDetail.tags?.length">
               <span
                 class="iconfont icon-biaoqian"
                 style="font-size: 20px"
               ></span>
-              <p>{{ moodDetail.tag }}</p>
+              <template v-for="item of moodDetail.tags">
+                <p>{{ item }}</p>
+              </template>
             </div>
           </div>
         </div>
