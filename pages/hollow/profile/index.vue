@@ -1,5 +1,5 @@
 <template>
-  <TopMenu :isShowCenter="false">
+  <TopMenu>
     <template #navbar-left>
       <span
         class="iconfont icon-fanhui"
@@ -71,40 +71,31 @@
     </el-skeleton>
 
     <div class="feature-card">
-      <div class="list-item">
-        <div class="list-item-desc">
-          <span class="iconfont icon-biji"></span>
-          <p>心情</p>
+      <template v-for="item of featureList">
+        <div class="list-item" @click="handleItemClick(item.title)">
+          <div class="list-item-desc">
+            <span :class="item.iconfont"></span>
+            <p>{{ item.title }}</p>
+          </div>
+          <el-icon style="margin-right: 24px"><ArrowRightBold /></el-icon>
         </div>
-        <el-icon style="margin-right: 24px"><ArrowRightBold /></el-icon>
-      </div>
-      <div class="list-item">
-        <div class="list-item-desc">
-          <span class="iconfont icon-biaoqian"></span>
-          <p>标签</p>
-        </div>
-        <el-icon style="margin-right: 24px"><ArrowRightBold /></el-icon>
-      </div>
-      <div class="list-item">
-        <div class="list-item-desc">
-          <span class="iconfont icon-xingxing"></span>
-          <p>情绪评分</p>
-        </div>
-        <el-icon style="margin-right: 24px"><ArrowRightBold /></el-icon>
-      </div>
-      <div class="list-item">
-        <div class="list-item-desc">
-          <span class="iconfont icon-bianji1"></span>
-          <p>修改密码</p>
-        </div>
-        <el-icon style="margin-right: 24px"><ArrowRightBold /></el-icon>
+      </template>
+      <div style="margin: 10px 24px">
+        <el-button
+          @click="handleLogout"
+          color="#FFBF6B"
+          class="logoutBtn"
+          round
+          :loading="logoutLoading"
+          >退出登录
+        </el-button>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from 'vue'
+import { onMounted, ref, reactive } from 'vue'
 import dayjs from 'dayjs'
 import { ArrowRightBold } from '@element-plus/icons-vue'
 import { request, state } from '~/config/http.config'
@@ -125,6 +116,54 @@ const userInfo = reactive({
 })
 
 const today = dayjs()
+const logoutLoading = ref<boolean>(false)
+
+const featureList = [
+  {
+    iconfont: 'iconfont icon-biji',
+    title: '心情',
+  },
+  {
+    iconfont: 'iconfont icon-biaoqian',
+    title: '标签',
+  },
+  {
+    iconfont: 'iconfont icon-xingxing',
+    title: '情绪评分',
+  },
+  {
+    iconfont: 'iconfont icon-bianji1',
+    title: '修改信息',
+  },
+]
+
+const handleItemClick = (title: string) => {
+  switch (title) {
+    case '心情':
+      router.push('profile/all-mood')
+      break
+    case '标签':
+      router.push('profile/all-tags')
+      break
+    case '情绪评分':
+      router.push('profile/mood-rate')
+      break
+    case '修改信息':
+      router.push('profile/update')
+      break
+    default:
+      break
+  }
+}
+
+const handleLogout = () => {
+  logoutLoading.value = true
+  setTimeout(() => {
+    logoutLoading.value = false
+    localStorage.removeItem('token')
+    router.push('/hollow/login')
+  }, 500)
+}
 
 const fetchUserInfo = async () => {
   await request<User>('get', '/user/profile/query', null, (res) => {
@@ -226,6 +265,11 @@ onMounted(() => {
           margin: 24px;
         }
       }
+    }
+    .logoutBtn {
+      color: #fff;
+      width: 100%;
+      height: 40px;
     }
   }
 }

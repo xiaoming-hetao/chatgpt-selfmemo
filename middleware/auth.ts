@@ -9,7 +9,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
       message: '登录已过期，请重新登录',
       center: true,
       type: 'warning',
-      offset: 100,
+      offset: 50,
     })
     router.push('/hollow/login')
   }

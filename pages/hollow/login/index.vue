@@ -90,7 +90,13 @@ const handleSubmit = async (formEl: FormInstance | undefined) => {
           router.push('/hollow')
         },
         (err) => {
-          console.log(err)
+          ElMessage({
+            message: '用户名或密码错误',
+            center: true,
+            type: 'error',
+            grouping: true,
+            offset: 50,
+          })
           isLoading.value = false
         }
       )
